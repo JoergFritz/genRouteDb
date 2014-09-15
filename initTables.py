@@ -1,9 +1,6 @@
 import MySQLdb as mdb
 import sys
 
-# import user defined stuff
-from dbFunctions import checkTableExists
-
 # connect to database with running routes
 con=mdb.connect(host="mysql.server",user="JoergFritz", \
             db="JoergFritz$runRoutesTest",passwd="you-wish")
@@ -13,14 +10,6 @@ with con:
     cur = con.cursor(mdb.cursors.DictCursor)
 
     # start new tables if they already exist
-    if checkTableExists(con,"Tracks"):
-        cur.execute("DROP TABLE IF EXISTS Tracks")
-    if checkTableExists(con,"Points"):
-        cur.execute("DROP TABLE IF EXISTS Points")
-    if checkTableExists(con,"Cities"):
-        cur.execute("DROP TABLE IF EXISTS Cities")
-
-    # more simple version
     cur.execute("DROP TABLE IF EXISTS Tracks")
     cur.execute("DROP TABLE IF EXISTS Points")
     cur.execute("DROP TABLE IF EXISTS Cities")
@@ -40,6 +29,7 @@ with con:
                 View FLOAT, \
                 Traffic FLOAT, \
                 Popularity FLOAT, \
+                Circularity FLOAT, \
                 StartLat FLOAT, \
                 StartLng FLOAT, \
                 QuarterLat FLOAT, \
@@ -47,7 +37,8 @@ with con:
                 HalfLat FLOAT, \
                 HalfLng FLOAT, \
                 ThreeQuarterLat FLOAT, \
-                ThreeQuarterLng FLOAT) \
+                ThreeQuarterLng FLOAT), \
+                NumPoints INT \
                  ")
     cur.execute("CREATE TABLE Points \
                 (Id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, \

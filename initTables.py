@@ -37,12 +37,14 @@ with con:
                 HalfLat FLOAT, \
                 HalfLng FLOAT, \
                 ThreeQuarterLat FLOAT, \
-                ThreeQuarterLng FLOAT), \
-                NumPoints INT \
+                ThreeQuarterLng FLOAT, \
+                NumPoints INT, \
+                UNIQUE (MapMyRunId)) \
                  ")
     cur.execute("CREATE TABLE Points \
                 (Id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, \
                 MapMyRunId INT, \
                 Lat FLOAT, \
-                Lng FLOAT) \
+                Lng FLOAT, \
+                UNIQUE (MapMyRunId)) \
                  ")

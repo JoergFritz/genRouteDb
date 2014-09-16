@@ -30,21 +30,19 @@ with con:
                 Traffic FLOAT, \
                 Popularity FLOAT, \
                 Circularity FLOAT, \
-                StartLat FLOAT, \
-                StartLng FLOAT, \
-                QuarterLat FLOAT, \
-                QuarterLng FLOAT, \
-                HalfLat FLOAT, \
-                HalfLng FLOAT, \
-                ThreeQuarterLat FLOAT, \
-                ThreeQuarterLng FLOAT, \
-                NumPoints INT, \
-                UNIQUE (MapMyRunId)) \
+                StartLat FLOAT(10,6), \
+                StartLng FLOAT(10,6), \
+                QuarterLat FLOAT(10,6), \
+                QuarterLng FLOAT(10,6), \
+                HalfLat FLOAT(10,6), \
+                HalfLng FLOAT(10,6), \
+                ThreeQuarterLat FLOAT(10,6), \
+                ThreeQuarterLng FLOAT(10,6), \
+                NumPoints MEDIUMINT) \
                  ")
     cur.execute("CREATE TABLE Points \
                 (Id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, \
                 MapMyRunId INT, \
-                Lat FLOAT, \
-                Lng FLOAT, \
-                UNIQUE (MapMyRunId)) \
+                Lat FLOAT(10,6), \
+                Lng FLOAT(10,6)) \
                  ")

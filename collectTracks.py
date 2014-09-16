@@ -11,10 +11,10 @@ con=mdb.connect(host="mysql.server",user="JoergFritz", \
 cur = con.cursor(mdb.cursors.DictCursor)
 
 # define ways to add info to database
-add_track = ("INSERT INTO Tracks "
+add_track = ("INSERT IGNORE INTO Tracks "
               "(MapMyRunId, Name, City, Distance, Ascent, Nature, StartLat, StartLng, QuarterLat, QuarterLng, HalfLat, HalfLng, ThreeQuarterLat, ThreeQuarterLng) "
               "VALUES (%(MapMyRunId)s, %(Name)s, %(City)s, %(Distance)s, %(Ascent)s, %(Nature)s, %(StartLat)s, %(StartLng)s, %(QuarterLat)s, %(QuarterLng)s, %(HalfLat)s, %(HalfLng)s, %(ThreeQuarterLat)s, %(ThreeQuarterLng)s)")
-add_point = ("INSERT INTO Points "
+add_point = ("INSERT IGNORE INTO Points "
               "(MapMyRunId, Lat, Lng) "
               "VALUES (%(MapMyRunId)s, %(Lat)s, %(Lng)s)")
 
@@ -23,7 +23,7 @@ mmf = MapMyFitness(api_key='4h968vgnddc5r5kswxdpf7tnuat7h8sk', access_token='6cf
 gop = GooglePlaces('AIzaSyBb2jxg7xdMbtQdJNCMgrtrOO6hbb6niEI')
 
 minDist=6800
-maxDist=6850
+maxDist=6830
 #maxDist=2050
 #stepSize=3000
 stepSize=10

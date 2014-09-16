@@ -11,10 +11,10 @@ con=mdb.connect(host="mysql.server",user="JoergFritz", \
 cur = con.cursor(mdb.cursors.DictCursor)
 
 # define ways to add info to database
-add_track = ("INSERT IGNORE INTO Tracks "
-              "(MapMyRunId, Name, City, Distance, Ascent, Nature, StartLat, StartLng, QuarterLat, QuarterLng, HalfLat, HalfLng, ThreeQuarterLat, ThreeQuarterLng) "
-              "VALUES (%(MapMyRunId)s, %(Name)s, %(City)s, %(Distance)s, %(Ascent)s, %(Nature)s, %(StartLat)s, %(StartLng)s, %(QuarterLat)s, %(QuarterLng)s, %(HalfLat)s, %(HalfLng)s, %(ThreeQuarterLat)s, %(ThreeQuarterLng)s)")
-add_point = ("INSERT IGNORE INTO Points "
+add_track = ("INSERT INTO Tracks "
+              "(MapMyRunId, Name, City, Distance, Ascent, Nature, Circularity, StartLat, StartLng, QuarterLat, QuarterLng, HalfLat, HalfLng, ThreeQuarterLat, ThreeQuarterLng, NumPoints) "
+              "VALUES (%(MapMyRunId)s, %(Name)s, %(City)s, %(Distance)s, %(Ascent)s, %(Nature)s, %(Circularity)s, %(StartLat)s, %(StartLng)s, %(QuarterLat)s, %(QuarterLng)s, %(HalfLat)s, %(HalfLng)s, %(ThreeQuarterLat)s, %(ThreeQuarterLng)s, %(NumPoints)s)")
+add_point = ("INSERT INTO Points "
               "(MapMyRunId, Lat, Lng) "
               "VALUES (%(MapMyRunId)s, %(Lat)s, %(Lng)s)")
 
@@ -66,16 +66,20 @@ while curDist<maxDist:
                 endDistance = haversine((startPoint['lat'],startPoint['lng']),(endPoint['lat'],endPoint['lng']))
                 if endDistance < route_distance/10:
                     n=n+1 # count this route
+                    # get arrays with al points on route
+                    pointLat=np.zeros(points_count)
+                    pointLng=np.zeros(points_count)
                     for point_num in points_range:
                         point = route_points[point_num]
-                        pointLat = point['lat']
-                        pointLng = point['lng']
+                        pointLat[point_num] = point['lat']
+                        pointLng[point_num] = point['lng']
                         data_point = {
                             'MapMyRunId': route_id,
-                            'Lat': pointLat,
-                            'Lng': pointLng,
+                            'Lat': pointLat[point_num],
+                            'Lng': pointLng[point_num],
                         }
                         cur.execute(add_point, data_point)
+                    # find key points to save in tracks database
                     m = 0
                     for point_num in xrange(0,points_count,points_count/4+1):
                         point = route_points[point_num]
@@ -92,6 +96,9 @@ while curDist<maxDist:
                     route_name = route.name
                     route_city = route.city
                     route_ascent = route.ascent/route.distance
+                    sizeLat = abs(max(pointLat) - min(pointLat))
+                    sizeLng = abs(max(pointLng) - min(pointLng))
+                    route_circularity = 1 - abs((sizeLat-sizeLng)/route_distance-1.0/4.0)
                     data_track = {
                         'MapMyRunId': route_id,
                         'Name': route_name.encode('ascii', 'ignore'),
@@ -99,6 +106,7 @@ while curDist<maxDist:
                         'Distance': route_distance,
                         'Ascent': route_ascent,
                         'Nature': route_nature,
+                        'Circularity': route_circularity,
                         'StartLat': keyLat[0],
                         'StartLng': keyLng[0],
                         'QuarterLat':keyLat[1],
@@ -107,16 +115,16 @@ while curDist<maxDist:
                         'HalfLng': keyLng[2],
                         'ThreeQuarterLat': keyLat[3],
                         'ThreeQuarterLng': keyLng[3],
+                        'NumPoints': points_count
                     }
                     cur.execute(add_track, data_track)
         curDist=curDist+stepSize
         stepSize=stepSize+1
-        print curDist
+        print 'Current distance: ' + repr(curDist) + ', tracks added: ' + repr(n)
+        # Make sure data is committed to the database
+        con.commit()
     else:
         stepSize=stepSize/2
-
-# Make sure data is committed to the database
-con.commit()
 
 cur.close()
 con.close()

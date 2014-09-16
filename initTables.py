@@ -3,7 +3,7 @@ import sys
 
 # connect to database with running routes
 con=mdb.connect(host="mysql.server",user="JoergFritz", \
-            db="JoergFritz$runRoutesTest",passwd="you-wish")
+            db="JoergFritz$runRoutes",passwd="you-wish")
 
 # create tables
 with con:

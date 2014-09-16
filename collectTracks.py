@@ -4,10 +4,12 @@ from pandas import Series
 import numpy as np
 from haversine import haversine
 import MySQLdb as mdb
+import urllib2
+import time
 
 # connect to database with running routes
 con=mdb.connect(host="mysql.server",user="JoergFritz", \
-            db="JoergFritz$runRoutesTest",passwd="you-wish")
+            db="JoergFritz$runRoutes",passwd="you-wish")
 cur = con.cursor(mdb.cursors.DictCursor)
 
 # define ways to add info to database
@@ -22,8 +24,8 @@ add_point = ("INSERT INTO Points "
 mmf = MapMyFitness(api_key='4h968vgnddc5r5kswxdpf7tnuat7h8sk', access_token='6cf8fc4094b30b31b49990083c3c25ad3fcfdefc')
 gop = GooglePlaces('AIzaSyBb2jxg7xdMbtQdJNCMgrtrOO6hbb6niEI')
 
-minDist=6800
-maxDist=6830
+minDist=7109
+maxDist=40000
 #maxDist=2050
 #stepSize=3000
 stepSize=10
@@ -86,11 +88,16 @@ while curDist<maxDist:
                         keyLat[m] = point['lat']
                         keyLng[m] = point['lng']
                         loc = {'lat': keyLat[m], 'lng': keyLng[m]}
-                        query_result = gop.nearby_search(
-                            lat_lng=loc, radius=5000, types=[types.TYPE_PARK,types.TYPE_ZOO], rankby='distance')
-                        natureLat = query_result.places[0].geo_location['lat']
-                        natureLng = query_result.places[0].geo_location['lng']
-                        natureDist[m] = haversine((keyLat[m],keyLng[m]),(natureLat,natureLng))
+                        try:
+                            query_result = gop.nearby_search(
+                                lat_lng=loc, radius=5000, types=[types.TYPE_PARK,types.TYPE_ZOO], rankby='distance')
+                            natureLat = query_result.places[0].geo_location['lat']
+                            natureLng = query_result.places[0].geo_location['lng']
+                            natureDist[m] = haversine((keyLat[m],keyLng[m]),(natureLat,natureLng))
+                        except:
+                            print "error caught"
+                            time.sleep(1)
+                            natureDist[m] = 5000.0
                         m = m+1
                     route_nature = np.mean(natureDist)
                     route_name = route.name

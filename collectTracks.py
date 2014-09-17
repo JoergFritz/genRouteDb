@@ -24,7 +24,7 @@ add_point = ("INSERT INTO Points "
 mmf = MapMyFitness(api_key='4h968vgnddc5r5kswxdpf7tnuat7h8sk', access_token='6cf8fc4094b30b31b49990083c3c25ad3fcfdefc')
 gop = GooglePlaces('AIzaSyBb2jxg7xdMbtQdJNCMgrtrOO6hbb6niEI')
 
-minDist=7109
+minDist=2000
 maxDist=40000
 #maxDist=2050
 #stepSize=3000
@@ -35,8 +35,9 @@ keyLat=np.zeros(numKeyPoints)
 keyLng=np.zeros(numKeyPoints)
 natureDist=np.zeros(numKeyPoints)
 
-latitude=37.42565
-longitude=-122.13535
+# so far Palo Alto, San Francisco
+latitude=37.7577
+longitude=-122.4376
 
 n = 0
 curDist=minDist

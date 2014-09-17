@@ -3,7 +3,7 @@ import sys
 
 # connect to database with running routes
 con=mdb.connect(host="mysql.server",user="JoergFritz", \
-            db="JoergFritz$runRoutes",passwd="you-wish")
+            db="JoergFritz$runRoutesTest",passwd="you-wish")
 
 # create tables
 with con:
@@ -12,7 +12,6 @@ with con:
     # start new tables if they already exist
     cur.execute("DROP TABLE IF EXISTS Tracks")
     cur.execute("DROP TABLE IF EXISTS Points")
-    cur.execute("DROP TABLE IF EXISTS Cities")
 
     # create Database for summary of running tracks
     cur.execute("CREATE TABLE Tracks \

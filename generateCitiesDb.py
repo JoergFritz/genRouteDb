@@ -1,29 +1,41 @@
 import MySQLdb as mdb
-import pandas as pd
 import numpy as np
 from helpers import geocode
 
 # connect to database with running routes
 con=mdb.connect(host="mysql.server",user="JoergFritz", \
             db="JoergFritz$runRoutesTest",passwd="you-wish")
-
 cur = con.cursor(mdb.cursors.DictCursor)
+
+# create Database for cities
+cur.execute("DROP TABLE IF EXISTS Cities")
+cur.execute("CREATE TABLE Cities \
+            (Id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, \
+            City VARCHAR(50), \
+            Lat FLOAT(10,6),  \
+            Lng FLOAT(10,6))  \
+             ")
+
+add_city = ("INSERT INTO Cities "
+              "(City, Lat, Lng) "
+              "VALUES (%(City)s, %(Lat)s, %(Lng)s)")
 
 keyLocations=['Palo Alto, CA', 'Stanford, CA', 'East Palo Alto, CA', 'Mountain View, CA', 'Sunnyvale, CA', 'Menlo Park, CA']
 lat = np.zeros(len(keyLocations))
 lng = np.zeros(len(keyLocations))
 
-for i in range(len(keyLocations)):
-    lat[i],lng[i],full_add,data = geocode(keyLocations[i])
+for city in keyLocations:
+    lat,lng,full_add,data = geocode(city)
+    data_city = {
+            'City': city,
+            'Lat': lat,
+            'Lng': lng,
+    }
+    cur.execute(add_city, data_city)
 
-data = { 'city': keyLocations,
-          'lat': lat,
-          'lng': lng}
+con.commit()
 
-citiesData = pd.DataFrame(data, columns=['city', 'lat', 'lng'])
-
-print citiesData
-
-
+cur.close()
+con.close()
 
 

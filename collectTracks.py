@@ -52,7 +52,7 @@ while curDist<maxDist:
     page_range = routes_paginator.page_range # [1, 2]
     total_count = routes_paginator.count # 58
 
-    if total_count<40:
+    if (total_count<40) or (stepSize<2):
         the_page = routes_paginator.page(1)
         for route in the_page:
             if (route.points() is not None) and (route.points() > 40) and (route.ascent is not None) and (not any(x in route.name for x in filterWords)):

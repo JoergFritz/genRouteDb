@@ -37,10 +37,10 @@ with con:
                 HalfLng FLOAT(10,6), \
                 ThreeQuarterLat FLOAT(10,6), \
                 ThreeQuarterLng FLOAT(10,6), \
-                endLat FLOAT(10,6), \
-                endLng FLOAT(10,6), \
-                centerLat FLOAT(10,6), \
-                cenerLng FLOAT(10,6), \
+                EndLat FLOAT(10,6), \
+                EndLng FLOAT(10,6), \
+                CenterLat FLOAT(10,6), \
+                CenterLng FLOAT(10,6), \
                 NumPoints MEDIUMINT) \
                  ")
     cur.execute("CREATE TABLE Points \

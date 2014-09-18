@@ -14,8 +14,15 @@ cur = con.cursor(mdb.cursors.DictCursor)
 
 # define ways to add info to database
 add_track = ("INSERT INTO Tracks "
-              "(MapMyRunId, Name, City, Distance, Ascent, Nature, Circularity, StartLat, StartLng, QuarterLat, QuarterLng, HalfLat, HalfLng, ThreeQuarterLat, ThreeQuarterLng, NumPoints) "
-              "VALUES (%(MapMyRunId)s, %(Name)s, %(City)s, %(Distance)s, %(Ascent)s, %(Nature)s, %(Circularity)s, %(StartLat)s, %(StartLng)s, %(QuarterLat)s, %(QuarterLng)s, %(HalfLat)s, %(HalfLng)s, %(ThreeQuarterLat)s, %(ThreeQuarterLng)s, %(NumPoints)s)")
+              "(MapMyRunId, Name, City, Distance, Ascent, Nature, Circularity, \
+                StartLat, StartLng, QuarterLat, QuarterLng, HalfLat, HalfLng, \
+                ThreeQuarterLat, ThreeQuarterLng, EndLng, EndLat, CenterLat, \
+                CenterLng, NumPoints) "
+              "VALUES (%(MapMyRunId)s, %(Name)s, %(City)s, %(Distance)s, \
+                %(Ascent)s, %(Nature)s, %(Circularity)s, %(StartLat)s, \
+                %(StartLng)s, %(QuarterLat)s, %(QuarterLng)s, %(HalfLat)s, \
+                %(HalfLng)s, %(ThreeQuarterLat)s, %(ThreeQuarterLng)s, \
+                %(EndLat)s, %(EndLng)s, %(CenterLat)s, %(CenterLng)s, %(NumPoints)s)")
 add_point = ("INSERT INTO Points "
               "(MapMyRunId, Lat, Lng) "
               "VALUES (%(MapMyRunId)s, %(Lat)s, %(Lng)s)")
@@ -24,8 +31,8 @@ add_point = ("INSERT INTO Points "
 mmf = MapMyFitness(api_key='4h968vgnddc5r5kswxdpf7tnuat7h8sk', access_token='6cf8fc4094b30b31b49990083c3c25ad3fcfdefc')
 gop = GooglePlaces('AIzaSyBb2jxg7xdMbtQdJNCMgrtrOO6hbb6niEI')
 
-minDist=6000
-maxDist=6005
+minDist=3000
+maxDist=40000
 #maxDist=2050
 #stepSize=3000
 stepSize=4
@@ -36,8 +43,8 @@ keyLng=np.zeros(numKeyPoints)
 natureDist=np.zeros(numKeyPoints)
 
 # so far Palo Alto, San Francisco
-latitude=37.7577
-longitude=-122.4376
+latitude=37.42565
+longitude=-122.13535
 
 n = 0
 curDist=minDist
@@ -51,7 +58,7 @@ existIds = np.zeros(len(rowsTracks), dtype=np.int)
 #existIds = np.zeros(len(rowsTracks))
 for i in range(len(rowsTracks)):
     existIds[i] = rowsTracks[i]['MapMyRunId']
-    print existIds[i]
+    #print existIds[i]
 
 
 while curDist<maxDist:
@@ -77,7 +84,7 @@ while curDist<maxDist:
                 endPoint = route_points[points_count-1]
                 endDistance = 1000.0*haversine((startPoint['lat'],startPoint['lng']),(endPoint['lat'],endPoint['lng']))
                 if (endDistance < route_distance/10.0) and (not route_id in existIds):
-                    print route_id
+                    #print route_id
                     n=n+1 # count this route
                     # get arrays with all points on route
                     pointLat=np.zeros(points_count)
@@ -110,6 +117,8 @@ while curDist<maxDist:
                             time.sleep(1)
                             natureDist[m] = 5000.0
                         m = m+1
+                    centerLat = np.mean(keyLat)
+                    centerLng = np.mean(keyLng)
                     route_nature = np.mean(natureDist)
                     route_name = route.name
                     route_city = route.city
@@ -133,6 +142,10 @@ while curDist<maxDist:
                         'HalfLng': keyLng[2],
                         'ThreeQuarterLat': keyLat[3],
                         'ThreeQuarterLng': keyLng[3],
+                        'EndLat': endPoint['lat'],
+                        'EndLng': endPoint['lng'],
+                        'CenterLat': centerLat,
+                        'CenterLng': centerLng,
                         'NumPoints': points_count
                     }
                     cur.execute(add_track, data_track)

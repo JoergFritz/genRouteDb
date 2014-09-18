@@ -9,7 +9,7 @@ import time
 
 # connect to database with running routes
 con=mdb.connect(host="mysql.server",user="JoergFritz", \
-            db="JoergFritz$runRoutes",passwd="you-wish")
+            db="JoergFritz$runTracks",passwd="you-wish")
 cur = con.cursor(mdb.cursors.DictCursor)
 
 # define ways to add info to database
@@ -24,11 +24,11 @@ add_point = ("INSERT INTO Points "
 mmf = MapMyFitness(api_key='4h968vgnddc5r5kswxdpf7tnuat7h8sk', access_token='6cf8fc4094b30b31b49990083c3c25ad3fcfdefc')
 gop = GooglePlaces('AIzaSyBb2jxg7xdMbtQdJNCMgrtrOO6hbb6niEI')
 
-minDist=2000
-maxDist=40000
+minDist=6000
+maxDist=6005
 #maxDist=2050
 #stepSize=3000
-stepSize=10
+stepSize=4
 filterWords=["walk","bike","cycling","cruiser"]
 numKeyPoints=4
 keyLat=np.zeros(numKeyPoints)
@@ -44,6 +44,16 @@ curDist=minDist
 route_distance=Series()
 route_ascent=Series()
 
+# generate list with existing mapMyRunIds to avoid duplication
+cur.execute("SELECT Id, MapMyRunId from Tracks")
+rowsTracks = cur.fetchall()
+existIds = np.zeros(len(rowsTracks), dtype=np.int)
+#existIds = np.zeros(len(rowsTracks))
+for i in range(len(rowsTracks)):
+    existIds[i] = rowsTracks[i]['MapMyRunId']
+    print existIds[i]
+
+
 while curDist<maxDist:
 
     routes_paginator = mmf.route.search(close_to_location=[latitude,longitude], minimum_distance=curDist, maximum_distance=curDist+stepSize, per_page=50)
@@ -56,20 +66,20 @@ while curDist<maxDist:
         the_page = routes_paginator.page(1)
         for route in the_page:
             if (route.points() is not None) and (route.points() > 40) and (route.ascent is not None) and (not any(x in route.name for x in filterWords)):
-                n = n+1
                 # get basic route info
                 route_id = route.id
                 route_distance = route.distance
                 route_points = route.points()
                 points_count = len(route_points)
                 points_range = range(points_count)
-                # exclude non-circular routes
+                # exclude non-circular routes and routes already in the database
                 startPoint = route_points[0]
                 endPoint = route_points[points_count-1]
-                endDistance = haversine((startPoint['lat'],startPoint['lng']),(endPoint['lat'],endPoint['lng']))
-                if endDistance < route_distance/10:
+                endDistance = 1000.0*haversine((startPoint['lat'],startPoint['lng']),(endPoint['lat'],endPoint['lng']))
+                if (endDistance < route_distance/10.0) and (not route_id in existIds):
+                    print route_id
                     n=n+1 # count this route
-                    # get arrays with al points on route
+                    # get arrays with all points on route
                     pointLat=np.zeros(points_count)
                     pointLng=np.zeros(points_count)
                     for point_num in points_range:
@@ -96,7 +106,7 @@ while curDist<maxDist:
                             natureLng = query_result.places[0].geo_location['lng']
                             natureDist[m] = haversine((keyLat[m],keyLng[m]),(natureLat,natureLng))
                         except:
-                            print "error caught"
+                            print "error caught in google places api request, default value used"
                             time.sleep(1)
                             natureDist[m] = 5000.0
                         m = m+1

@@ -3,7 +3,7 @@ import sys
 
 # connect to database with running routes
 con=mdb.connect(host="mysql.server",user="JoergFritz", \
-            db="JoergFritz$runRoutesTest",passwd="you-wish")
+            db="JoergFritz$runTracks",passwd="you-wish")
 
 # create tables
 with con:
@@ -37,6 +37,10 @@ with con:
                 HalfLng FLOAT(10,6), \
                 ThreeQuarterLat FLOAT(10,6), \
                 ThreeQuarterLng FLOAT(10,6), \
+                endLat FLOAT(10,6), \
+                endLng FLOAT(10,6), \
+                centerLat FLOAT(10,6), \
+                cenerLng FLOAT(10,6), \
                 NumPoints MEDIUMINT) \
                  ")
     cur.execute("CREATE TABLE Points \

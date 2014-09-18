@@ -32,7 +32,7 @@ mmf = MapMyFitness(api_key='4h968vgnddc5r5kswxdpf7tnuat7h8sk', access_token='6cf
 gop = GooglePlaces('AIzaSyBb2jxg7xdMbtQdJNCMgrtrOO6hbb6niEI')
 
 minDist=3000
-maxDist=40000
+maxDist=3005
 #maxDist=2050
 #stepSize=3000
 stepSize=4
@@ -119,13 +119,13 @@ while curDist<maxDist:
                         m = m+1
                     centerLat = np.mean(keyLat)
                     centerLng = np.mean(keyLng)
-                    route_nature = np.mean(natureDist)
+                    route_nature = 1.0 - np.mean(natureDist)
                     route_name = route.name
                     route_city = route.city
-                    route_ascent = route.ascent/route.distance
-                    sizeLat = abs(max(pointLat) - min(pointLat))
-                    sizeLng = abs(max(pointLng) - min(pointLng))
-                    route_circularity = 1 - abs((sizeLat-sizeLng)/route_distance-1.0/4.0)
+                    route_ascent = 1000.0*route.ascent/route.distance
+                    sizeLat = 1000*haversine((max(pointLat),np.mean(pointLng)),(min(pointLat),np.mean(pointLng)))
+                    sizeLng = 1000*haversine((np.mean(pointLat),max(pointLng)),(np.mean(pointLat),min(pointLng)))
+                    route_circularity = 1.0 - abs((sizeLat-sizeLng)/route_distance-1.0/4.0)
                     data_track = {
                         'MapMyRunId': route_id,
                         'Name': route_name.encode('ascii', 'ignore'),

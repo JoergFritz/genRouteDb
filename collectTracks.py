@@ -32,7 +32,7 @@ mmf = MapMyFitness(api_key='4h968vgnddc5r5kswxdpf7tnuat7h8sk', access_token='6cf
 gop = GooglePlaces('AIzaSyBb2jxg7xdMbtQdJNCMgrtrOO6hbb6niEI')
 
 minDist=3000
-maxDist=3005
+maxDist=40000
 #maxDist=2050
 #stepSize=3000
 stepSize=4

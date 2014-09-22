@@ -4,7 +4,7 @@ from helpers import geocode
 
 # connect to database with running routes
 con=mdb.connect(host="mysql.server",user="JoergFritz", \
-            db="JoergFritz$runRoutesTest",passwd="you-wish")
+            db="JoergFritz$runTracks",passwd="you-wish")
 cur = con.cursor(mdb.cursors.DictCursor)
 
 # create Database for cities

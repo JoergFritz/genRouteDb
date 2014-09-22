@@ -3,7 +3,7 @@ import sys
 
 # connect to database with running routes
 con=mdb.connect(host="mysql.server",user="JoergFritz", \
-            db="JoergFritz$runTracks",passwd="you-wish")
+            db="JoergFritz$runRoutesTest",passwd="you-wish")
 
 # create tables
 with con:
@@ -49,3 +49,5 @@ with con:
                 Lat FLOAT(10,6), \
                 Lng FLOAT(10,6)) \
                  ")
+    cur.execute("ALTER TABLE Points \
+                ADD INDEX Idx_MapMyRunId (MapMyRunId);")

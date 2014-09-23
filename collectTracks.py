@@ -28,10 +28,11 @@ add_point = ("INSERT INTO Points "
               "VALUES (%(MapMyRunId)s, %(Lat)s, %(Lng)s)")
 
 # connect to apis
-mmf = MapMyFitness(api_key='4h968vgnddc5r5kswxdpf7tnuat7h8sk', access_token='6cf8fc4094b30b31b49990083c3c25ad3fcfdefc')
+#mmf = MapMyFitness(api_key='4h968vgnddc5r5kswxdpf7tnuat7h8sk', access_token='6cf8fc4094b30b31b49990083c3c25ad3fcfdefc')
+mmf = MapMyFitness(api_key='bz2te8jv7g47t39jgq9fgk6frf8u6axb', access_token='5633c4208a61144a285f706f8f8f0c71fbfa499d')
 gop = GooglePlaces('AIzaSyBb2jxg7xdMbtQdJNCMgrtrOO6hbb6niEI')
 
-minDist=3000
+minDist=24151
 maxDist=40000
 #maxDist=2050
 #stepSize=3000

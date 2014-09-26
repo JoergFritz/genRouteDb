@@ -32,7 +32,7 @@ add_point = ("INSERT INTO Points "
 mmf = MapMyFitness(api_key='bz2te8jv7g47t39jgq9fgk6frf8u6axb', access_token='5633c4208a61144a285f706f8f8f0c71fbfa499d')
 gop = GooglePlaces('AIzaSyBb2jxg7xdMbtQdJNCMgrtrOO6hbb6niEI')
 
-minDist=24151
+minDist=3000 # start at 3000
 maxDist=40000
 #maxDist=2050
 #stepSize=3000
@@ -43,9 +43,9 @@ keyLat=np.zeros(numKeyPoints)
 keyLng=np.zeros(numKeyPoints)
 natureDist=np.zeros(numKeyPoints)
 
-# so far Palo Alto, San Francisco
-latitude=37.42565
-longitude=-122.13535
+# so far Palo Alto, Mountain View, San Francisco, Atherton, Sunnyvale Top
+latitude=37.3939693
+longitude=-121.9982622
 
 n = 0
 curDist=minDist
@@ -64,7 +64,12 @@ for i in range(len(rowsTracks)):
 
 while curDist<maxDist:
 
-    routes_paginator = mmf.route.search(close_to_location=[latitude,longitude], minimum_distance=curDist, maximum_distance=curDist+stepSize, per_page=50)
+    try:
+        routes_paginator = mmf.route.search(close_to_location=[latitude,longitude], minimum_distance=curDist, maximum_distance=curDist+stepSize, per_page=50)
+    except:
+        print "json read error in mapmyfitness api request, retrying in 5 seconds"
+        time.sleep(5)
+        routes_paginator = mmf.route.search(close_to_location=[latitude,longitude], minimum_distance=curDist, maximum_distance=curDist+stepSize, per_page=50)
 
     page_count = routes_paginator.num_pages  # 2
     page_range = routes_paginator.page_range # [1, 2]

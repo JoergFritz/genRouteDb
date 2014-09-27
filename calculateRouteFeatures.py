@@ -1,6 +1,7 @@
 import pysal
 import MySQLdb as mdb
 import numpy as np
+from scipy import stats
 
 # connect to database with running routes
 con=mdb.connect(host="mysql.server",user="JoergFritz", \
@@ -9,6 +10,46 @@ cur = con.cursor(mdb.cursors.DictCursor)
 
 cur.execute("SELECT MapMyRunId,StartLat,QuarterLat,HalfLat,ThreeQuarterLat,StartLng,QuarterLng,HalfLng,ThreeQuarterLng from Tracks")
 rowsTracks = cur.fetchall()
+numPoints = 4*len(rowsTracks)
+lat = np.zeros(numPoints)
+lng = np.zeros(numPoints)
+
+n = 0
+for row in rowsTracks:
+	mapMyRunId = row['MapMyRunId']
+	startLat = row['StartLat']
+	lat[n] = startLat
+	startLng = row['StartLng']
+	lng[n] = startLng
+	n = n+1
+	quarterLat = row['QuarterLat']
+	lat[n] = quarterLat
+	quarterLng = row['QuarterLng']
+	lng[n] = quarterLng
+	n = n+1
+	halfLat = row['HalfLat']
+	lat[n] = halfLat
+	halfLng = row['HalfLng']
+	lng[n] = halfLng
+	n = n+1
+	threeQuarterLat = row['ThreeQuarterLat']
+	lat[n] = threeQuarterLat
+	threeQuarterLng = row['ThreeQuarterLng']
+	lng[n] = threeQuarterLng
+	n = n+1
+
+latMin = lat.min()
+latMax = lat.max()
+lngMin = lng.min()
+lngMax = lng.max()
+
+X, Y = np.mgrid[latMin:latMax:100j, lngMin:lngMax:100j]
+positions = np.vstack([X.ravel(), Y.ravel()])
+values = np.vstack([lat, lng])
+kernel = stats.gaussian_kde(values)
+Z = np.reshape(kernel(positions).T, X.shape)
+
+print latMax
 
 pts = np.random.random((100,2)) #generate some random points
 rad = 0.2 #pick an arbitrary radius

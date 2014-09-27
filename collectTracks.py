@@ -32,7 +32,7 @@ add_point = ("INSERT INTO Points "
 mmf = MapMyFitness(api_key='bz2te8jv7g47t39jgq9fgk6frf8u6axb', access_token='5633c4208a61144a285f706f8f8f0c71fbfa499d')
 gop = GooglePlaces('AIzaSyBb2jxg7xdMbtQdJNCMgrtrOO6hbb6niEI')
 
-minDist=3000 # start at 3000
+minDist=9637 # start at 3000
 maxDist=40000
 #maxDist=2050
 #stepSize=3000
@@ -43,9 +43,9 @@ keyLat=np.zeros(numKeyPoints)
 keyLng=np.zeros(numKeyPoints)
 natureDist=np.zeros(numKeyPoints)
 
-# so far Palo Alto, Mountain View, San Francisco, Atherton, Sunnyvale Top
-latitude=37.3939693
-longitude=-121.9982622
+# so far Palo Alto, Mountain View, San Francisco, Atherton, Sunnyvale Top, San Carlos
+latitude=37.5023724
+longitude=-122.2708902
 
 n = 0
 curDist=minDist
@@ -126,16 +126,22 @@ while curDist<maxDist:
                     centerLat = np.mean(keyLat)
                     centerLng = np.mean(keyLng)
                     route_nature = 1.0 - np.mean(natureDist)
-                    route_name = route.name
-                    route_city = route.city
+                    if route.name is not None:
+                        route_name = route.name.encode('ascii', 'ignore')
+                    else:
+                        route_name = 'None'
+                    if route.city is not None:
+                        route_city = route.city.encode('ascii', 'ignore')
+                    else:
+                        route_city = 'None'
                     route_ascent = 1000.0*route.ascent/route.distance
                     sizeLat = 1000*haversine((max(pointLat),np.mean(pointLng)),(min(pointLat),np.mean(pointLng)))
                     sizeLng = 1000*haversine((np.mean(pointLat),max(pointLng)),(np.mean(pointLat),min(pointLng)))
                     route_circularity = 1.0 - abs((sizeLat-sizeLng)/route_distance-1.0/4.0)
                     data_track = {
                         'MapMyRunId': route_id,
-                        'Name': route_name.encode('ascii', 'ignore'),
-                        'City': route_city.encode('ascii', 'ignore'),
+                        'Name': route_name,
+                        'City': route_city,
                         'Distance': route_distance,
                         'Ascent': route_ascent,
                         'Nature': route_nature,

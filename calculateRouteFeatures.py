@@ -2,6 +2,7 @@ import pysal
 import MySQLdb as mdb
 import numpy as np
 from scipy import stats
+import matplotlib.pyplot as plt
 
 # connect to database with running routes
 con=mdb.connect(host="mysql.server",user="JoergFritz", \
@@ -38,27 +39,40 @@ for row in rowsTracks:
 	lng[n] = threeQuarterLng
 	n = n+1
 
-latMin = lat.min()
-latMax = lat.max()
-lngMin = lng.min()
-lngMax = lng.max()
+#latMin = lat.min()
+#latMax = lat.max()
+#lngMin = lng.min()
+#lngMax = lng.max()
 
-X, Y = np.mgrid[latMin:latMax:100j, lngMin:lngMax:100j]
-positions = np.vstack([X.ravel(), Y.ravel()])
+#X, Y = np.mgrid[latMin:latMax:100j, lngMin:lngMax:100j]
+#positions = np.vstack([X.ravel(), Y.ravel()])
 values = np.vstack([lat, lng])
 kernel = stats.gaussian_kde(values)
-Z = np.reshape(kernel(positions).T, X.shape)
 
-print latMax
+n=0
+for row in rowsTracks:
+	mapMyRunId = row['MapMyRunId']
+	startLat = row['StartLat']
+	startLng = row['StartLng']
+	startDensity = float(kernel([startLat,startLng]))
+	quarterLat = row['QuarterLat']
+	quarterLng = row['QuarterLng']
+	quarterDensity = float(kernel([quarterLat,quarterLng]))
+	halfLat = row['HalfLat']
+	halfLng = row['HalfLng']
+	halfDensity = float(kernel([halfLat,halfLng]))
+	threeQuarterLat = row['ThreeQuarterLat']
+	threeQuarterLng = row['ThreeQuarterLng']
+	threeQuarterDensity = float(kernel([threeQuarterLat,threeQuarterLng]))
+	avgDensity = (startDensity+quarterDensity+halfDensity+threeQuarterDensity)/4.0
+	cur.execute("UPDATE Tracks SET Popularity=%s WHERE MapMyRunId=%s",(avgDensity,mapMyRunId))
+	n = n+1
+	print n
 
-pts = np.random.random((100,2)) #generate some random points
-rad = 0.2 #pick an arbitrary radius
+con.commit()
 
-#Build a Spatial Weights Matrix
-W = pysal.threshold_continuousW_from_array(pts, threshold=rad)
-# Note: if your points are in Latitude and Longitude you can increase the accuracy by
-#       passing the radius of earth to this function and it will use arc distances.
-# W = pysal.threshold_continuousW_from_array(pts, threshold=radius, radius=pysal.cg.RADIUS_EARTH_KM)
+cur.close()
+con.close()
 
-print W.weights[0]
-#{0: 10, 1: 15, ..... }
+
+

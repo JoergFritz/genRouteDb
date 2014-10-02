@@ -20,7 +20,7 @@ rowsTracks = cur.fetchall()
 
 print len(rowsTracks)
 
-with open("out.csv", "wb") as csv_file:
+with open("globalDensity.csv", "wb") as csv_file:
     csv_writer = csv.writer(csv_file)
     for row in rowsTracks:
         csv_writer.writerow([str(row['CenterLat'])+','+str(row['CenterLng'])])

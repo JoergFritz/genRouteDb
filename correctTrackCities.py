@@ -4,7 +4,7 @@ from haversine import haversine
 
 # connect to database with running routes
 con=mdb.connect(host="mysql.server",user="JoergFritz", \
-            db="JoergFritz$runTracks",passwd="you-wish")
+            db="JoergFritz$runRoutesTest",passwd="you-wish")
 cur = con.cursor(mdb.cursors.DictCursor)
 
 cur.execute("SELECT MapMyRunId,City,StartLat,QuarterLat,HalfLat,ThreeQuarterLat,StartLng,QuarterLng,HalfLng,ThreeQuarterLng from Tracks")

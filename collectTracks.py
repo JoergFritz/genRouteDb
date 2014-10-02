@@ -32,7 +32,7 @@ add_point = ("INSERT INTO Points "
 mmf = MapMyFitness(api_key='bz2te8jv7g47t39jgq9fgk6frf8u6axb', access_token='5633c4208a61144a285f706f8f8f0c71fbfa499d')
 gop = GooglePlaces('AIzaSyBb2jxg7xdMbtQdJNCMgrtrOO6hbb6niEI')
 
-minDist=9637 # start at 3000
+minDist=3000 # start at 3000
 maxDist=40000
 #maxDist=2050
 #stepSize=3000
@@ -44,8 +44,8 @@ keyLng=np.zeros(numKeyPoints)
 natureDist=np.zeros(numKeyPoints)
 
 # so far Palo Alto, Mountain View, San Francisco, Atherton, Sunnyvale Top, San Carlos
-latitude=37.5023724
-longitude=-122.2708902
+latitude=37.598555
+longitude=-122.4000032
 
 n = 0
 curDist=minDist
